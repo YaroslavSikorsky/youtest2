@@ -1,12 +1,9 @@
 package bot;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -45,11 +42,6 @@ public class TelegramConfig {
     @Bean
     public RequestStorage requestStorage() {
         return new RequestStorage();
-    }
-
-    @Bean
-    public NoteStorage noteStorage() {
-        return new NoteStorage();
     }
 
     @Bean

@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @AllArgsConstructor
 @Setter
 @Getter
@@ -22,11 +19,11 @@ public class Request {
     @Override
     public String toString() {
         return """
-            Имя: %s
-            Номер телефона: %s
-            Снаряд: %s
-            Дата: %s
-            Время: %s
-            """.formatted(getUserName(), getNumber(), getTool(), getDate(), getTime());
+                Имя: %s
+                Номер телефона: %s
+                Снаряд: %s
+                Дата: %s
+                Время: %s
+                """.formatted(getUserName(), getNumber(), getTool(), getDate(), getTime());
     }
 }

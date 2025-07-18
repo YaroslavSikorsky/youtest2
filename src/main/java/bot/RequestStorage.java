@@ -8,6 +8,7 @@ import java.util.*;
 public class RequestStorage {
     private final Map<Long, Request> requests = Collections.synchronizedMap(new HashMap<>());
     public List<Note> notes = new ArrayList<>();
+
     public void addNotes(String text) {
         notes.add(new Note(text));
     }
