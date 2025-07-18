@@ -1,0 +1,8 @@
+telegram:
+  api-url: "https://api.telegram.org/"
+  webhook-path: "https://58cc4776a90a.ngrok-free.app"
+  bot-name: "created_by_ys_younotes_bot"
+  bot-token: "7689684416:AAFxpuhZe2wiq1PRdfXQSD7g8j4eNZYBeoI"
+  trainer-chat-id: "-4655663559"
+server:
+  port: "8085"
