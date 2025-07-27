@@ -44,8 +44,8 @@ public class BotUtils {
     public static BotApiMethod<?> createSelectiomToolMessage(String chatId, String text) {
         SendMessage sendMessage = createMessage(chatId, text);
 
-        InlineKeyboardRow row1 = createInlineRow(createInlineButton("Отправить: " + text, NoteType.SEND.toString()));
-        InlineKeyboardRow row2 = createInlineRow(createInlineButton("Посмотреть все записи", NoteType.SEE.toString()));
+        InlineKeyboardRow row1 = createInlineRow(createInlineButton("Отправить: " + text, UtilType.SEND.toString()));
+        InlineKeyboardRow row2 = createInlineRow(createInlineButton("Посмотреть все записи", UtilType.SEE.toString()));
 
         sendMessage.setReplyMarkup(createInlineMarkup(row1, row2));
 
@@ -55,7 +55,7 @@ public class BotUtils {
     public static BotApiMethod<?> createSelectiomToolMessage2(String chatId, String text) {
         SendMessage sendMessage = createMessage(chatId, text);
 
-        InlineKeyboardRow row2 = createInlineRow(createInlineButton("Посмотреть все записи", NoteType.SEE.toString()));
+        InlineKeyboardRow row2 = createInlineRow(createInlineButton("Посмотреть все записи", UtilType.SEE.toString()));
 
         sendMessage.setReplyMarkup(createInlineMarkup(row2));
 

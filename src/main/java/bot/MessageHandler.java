@@ -20,12 +20,12 @@ public class MessageHandler {
         Long userId = message.getFrom().getId();
 
 
-        if ((message.hasText()) && !(message.getText().equals("/see"))) {
+        if ((message.hasText()) && !(message.getText().equals("/see")) && !(message.getText().equals("/start"))) {
             requestStorage.addNotes(message.getText());
             System.out.println(message.getText());
         }
 
-        if ((message.hasText()) && (message.getText().equals("/see"))) {
+        if ((message.hasText()) && (message.getText().equals("/see")) && !(message.getText().equals("/start"))) {
             System.out.println(message.getText());
             return createSelectiomToolMessage2(chatId, message.getText());
         }

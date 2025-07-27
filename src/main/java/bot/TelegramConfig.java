@@ -40,9 +40,10 @@ public class TelegramConfig {
     }
 
     @Bean
-    public RequestStorage requestStorage() {
-        return new RequestStorage();
+    public RequestStorage requestStorage(NotesRepository notesRepository) {
+        return new RequestStorage(notesRepository);
     }
+
 
     @Bean
     public CallbackQueryHandler callbackQueryHandler(RequestStorage requestStorage, TelegramClient telegramClient) {

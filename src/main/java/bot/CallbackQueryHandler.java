@@ -26,11 +26,11 @@ public class CallbackQueryHandler {
         String chatId = update.getCallbackQuery().getMessage().getChatId().toString();
         Long userId = update.getCallbackQuery().getFrom().getId();
 
-
-        if (update.getCallbackQuery().getData().equals(NoteType.SEE.toString())) {
+// пока убрал тк не правильно сохраняю класс нотес а сохраняю просто текст
+        if (update.getCallbackQuery().getData().equals(UtilType.SEE.toString())) {
             System.out.println("SEE is used");
 
-            List<Note> notes = requestStorage.showNotes();
+            List<String> notes = requestStorage.showNotes();
             StringBuilder sb = new StringBuilder();
 
             if (notes.isEmpty()) {
@@ -38,7 +38,7 @@ public class CallbackQueryHandler {
             } else {
                 sb.append("Список записей:\n\n");
                 for (int i = 0; i < notes.size(); i++) {
-                    sb.append(i + 1).append(". ").append(notes.get(i).getText()).append("\n");
+                    sb.append(i + 1).append(". ").append(notes.get(i)).append("\n");
                 }
             }
             SendMessage sendMessage = SendMessage.builder()
