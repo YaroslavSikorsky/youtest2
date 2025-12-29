@@ -1,20 +1,25 @@
-<!-- src/App.vue -->
-
 <template>
   <div id="app">
-    <router-view />
+    <AppHeader/>
+    <router-view/>
   </div>
 </template>
 
 <script>
+import AppHeader from "@/components/AppHeader.vue";
+
 export default {
-  name: 'App'
-}
+  name: "App",
+  components: {AppHeader}
+};
 </script>
 
 <style>
-body {
+html, body, #app {
+  height: 100%;
   margin: 0;
-  font-family: 'Arial', sans-serif;
+  padding: 0;
+  background: #f8f9fc;
+  font-family: 'Inter', sans-serif;
 }
 </style>

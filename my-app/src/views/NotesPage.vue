@@ -1,167 +1,264 @@
 <template>
-  <div id="NotesPage">
-    <header class="site-header">
-      <span class="site-title">Y O U</span>
-      <div class="header-buttons">
-        <button class="button">Вход</button>
-        <button class="button">Регистрация</button>
+  <div class="notes-layout">
+    <!-- LEFT PANEL -->
+    <aside class="sidebar">
+
+      <!-- MICRO USER PROFILE -->
+      <router-link
+          v-if="user"
+          to="/profile"
+          class="user-mini-profile"
+      >
+        <div class="avatar">
+          {{ initials }}
+        </div>
+        <div class="user-info">
+          <div class="user-name">
+            {{ user.firstName || "Пользователь" }}
+            {{ user.lastName || "" }}
+          </div>
+          <div class="user-email">
+            {{ user.email }}
+          </div>
+        </div>
+      </router-link>
+
+      <!-- MULTILINE INPUT AREA -->
+      <AddNote
+          :userId="currentUserId"
+          :noteType="selectedType"
+          @added="handleAddedNote"
+      />
+
+      <!-- TYPES SECTION -->
+      <div class="note-filters">
+        <!-- Большая кнопка "Все заметки" -->
+        <button
+            :class="['ui-type-pill', 'big-type', { 'is-active': selectedType === null }]"
+            @click="selectType(null)"
+        >
+          Все заметки
+        </button>
+
+        <!-- Остальные типы -->
+        <button
+            v-for="t in type"
+            :key="t"
+            :class="['ui-type-pill', { 'is-active': selectedType === t }]"
+            @click="selectType(t)"
+        >
+          {{ t }}
+        </button>
       </div>
-    </header>
 
-    <main class="content">
-      <img :src="logo" alt="Логотип" class="logo" />
-
-      <AddNotes @noteAdded="refreshNotes" />
-
-      <button class="button full-width" @click="toggleNotes">
-        {{ showNotes ? 'Скрыть список' : 'Список заметок' }}
+      <!-- Toggle list button -->
+      <button class="toggle-btn styled-toggle" @click="toggleNotes">
+        {{ showNotes ? "Скрыть список справа" : "Показать список справа" }}
       </button>
+    </aside>
 
-      <NotesList ref="notesList" v-if="showNotes" />
-    </main>
+    <!-- RIGHT CONTENT (НЕ ТРОГАЕМ) -->
+    <div class="content">
+      <NotesList
+          v-if="showNotes"
+          ref="notesList"
+          :currentType="selectedType"
+          :userId="currentUserId"
+      />
+    </div>
+
   </div>
 </template>
 
 <script>
-import AddNotes from '../components/AddNotes.vue';
-import NotesList from '../components/NotesList.vue';
-import LogoImage from '../assets/1111.png';
+import {getTypes, addNote as apiAddNote} from "@/api";
+import NotesList from "@/components/NotesList.vue";
+import AddNote from "@/components/AddNote.vue";
 
 export default {
-  name: 'NotesPage',
-  components: {
-    AddNotes,
-    NotesList
-  },
+  name: "NotesPage",
+  components: {NotesList, AddNote},
+
   data() {
     return {
-      logo: LogoImage,
-      showNotes: false
+      type: [],
+      selectedType: null,
+      showNotes: true,
+      currentUserId: null,
+      user: null
     };
   },
+
+  computed: {
+    initials() {
+      if (!this.user) return "?";
+      const f = this.user.firstName?.[0] || "";
+      const l = this.user.lastName?.[0] || "";
+      return (f + l).toUpperCase();
+    }
+  },
+
+  mounted() {
+    this.fetchType();
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.id) {
+      this.currentUserId = user.id;
+      this.user = user;
+    }
+  },
+
   methods: {
-    refreshNotes() {
-      if (this.showNotes) {
-        this.$refs.notesList.fetchNotes();
+    async fetchType() {
+      try {
+        this.type = await getTypes();
+      } catch (err) {
+        this.type = ["GAME", "HOME", "FILMS", "WISHLIST", "PARENT", "APARTMENT"];
       }
     },
+
+    selectType(t) {
+      this.selectedType = this.selectedType === t ? null : t;
+      this.$nextTick(() => {
+        if (this.$refs.notesList) this.$refs.notesList.fetchNotes();
+      });
+    },
+
     toggleNotes() {
       this.showNotes = !this.showNotes;
-      if (this.showNotes) {
-        this.$nextTick(() => {
-          this.$refs.notesList.fetchNotes();
-        });
+    },
+
+    async handleAddedNote(payload) {
+      try {
+        await apiAddNote(payload);
+        this.selectedType = payload.type;
+        this.$refs.notesList?.fetchNotes();
+      } catch (err) {
+        console.error(err);
       }
     }
   }
 };
-
 </script>
 
-<style>
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-body {
-  background-color: #f5f6f7;
-  /*background: linear-gradient(to bottom, #ffffff, #f2f8f1);*/
-  margin: 0;
-  padding: 0;
-  font-family: 'Arial', sans-serif;
+<style scoped>
+/* Layout */
+.notes-layout {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  gap: 48px;
+  max-width: 1800px;
+  margin: 100px auto;
+  padding: 0 40px;
+  align-items: start;
 }
 
-#app {
-  text-align: center;
-}
-
-.site-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 54px;
-  background-color: #fff;
-  border-bottom: 1px solid #ddd;
+/* Sidebar */
+.sidebar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 34px;
+}
+
+/* MICRO PROFILE (link-safe) */
+.user-mini-profile {
+  display: flex;
   align-items: center;
-  padding: 0 30px;
-  z-index: 1000;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
 
+  text-decoration: none;        /* ← убираем подчёркивание */
+  color: inherit;               /* ← не синий текст ссылки */
+  transition: box-shadow .18s, transform .18s;
 }
 
-.site-title {
-  font-weight: bold;
-  font-size: 18px;
-  color: #333;
+.user-mini-profile:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
-.header-buttons {
+/* AVATAR */
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--ui-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
   display: flex;
-  gap: 8px;
-}
-
-.content {
-  max-width: 600px;
-  margin: 120px auto 40px;
-  padding: 0 20px;
-}
-
-.logo {
-  width: 180px;
-  margin-bottom: 30px;
-}
-
-.button {
-  padding: 10px 18px;
-  background-color: #0073e2;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: background-color 0.3s, transform 0.2s;
-  color: white;
-}
-
-/*.button:hover {*/
-/*  background-color: #677d64;*/
-/*}*/
-
-.button:active {
-  transform: scale(1.05);
-}
-
-.full-width {
-  width: 488px;
-  margin-top: 20px;
-}
-input[type="text"] {
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  width: 50%;
-}
-input[type="text"]:hover {
-  border-color: #92b18e;
-  box-shadow: 0 0 4px rgba(146, 177, 142, 0.4);
-}
-input[type="text"]:focus {
-  outline: none;
-}
-.form-row {
-  display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
+}
+
+/* TEXT */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ui-text);          /* основной текст */
+}
+
+.user-email {
+  font-size: 12px;
+  color: var(--ui-text-muted);   /* серый из UI-kit */
+}
+
+
+/* Filters */
+.note-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-.notes-list {
-  list-style: none; /* Убирает точки */
-  padding: 0;
-  margin: 0;
+
+.big-type {
+  grid-column: span 2;
+  font-size: 16px;
+  padding: 14px;
+}
+
+/* Toggle button */
+.styled-toggle {
+  margin-top: 116px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--ui-border);
+  background: #fff;
+  color: #666;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.styled-toggle:hover {
+  background: #f0f3ff;
+  color: var(--ui-primary);
+  border-color: var(--ui-primary);
+}
+
+
+@media (max-width: 900px) {
+  .notes-layout {
+    grid-template-columns: 100%;
+    padding: 0 20px;
+    margin: 20px auto;
+  }
+}
+.content {
+  line-height: 0;
+}
+
+.content * {
+  line-height: normal;
 }
 
 </style>
