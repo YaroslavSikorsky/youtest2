@@ -3,8 +3,7 @@
     <AppHeader/>
 
     <div class="container" style="max-width:480px;margin-top:140px">
-      <div
-          style="background:var(--ui-surface);border:1px solid var(--ui-border);padding:32px;border-radius:16px;box-shadow:var(--shadow-sm);width:100%">
+      <div class="note-create-card">
         <h2 style="text-align:center;margin-bottom:18px">Войти</h2>
 
         <form @submit.prevent="handleLogin" style="display:flex;flex-direction:column;gap:12px">
@@ -28,41 +27,22 @@
 import AppHeader from "@/components/AppHeader.vue";
 
 export default {
-  components: {AppHeader},
-  data() {
-    return {email: "", password: ""};
-  },
+  components: { AppHeader },
+  data() { return { email: "", password: "" }; },
   methods: {
     async handleLogin() {
       try {
         const res = await fetch("http://localhost:8087/notes/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: this.email,
-            password: this.password
-          })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: this.email, password: this.password })
         });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          alert(errorText);
-          return;
-        }
-
+        if (!res.ok) { alert(await res.text()); return; }
         const user = await res.json();
-
         localStorage.setItem("auth", "true");
         localStorage.setItem("user", JSON.stringify(user));
-
         this.$router.push("/profile");
-
-      } catch (e) {
-        console.error(e);
-        alert("Ошибка сервера");
-      }
+      } catch (e) { console.error(e); alert("Ошибка сервера"); }
     }
   }
 };

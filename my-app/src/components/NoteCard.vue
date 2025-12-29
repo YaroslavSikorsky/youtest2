@@ -1,36 +1,25 @@
 <template>
   <div class="note-card">
-    <!-- HEADER -->
     <div class="note-card__header">
       <div class="type-block">
         <span class="note-card__dot" :class="dotClass"></span>
         <span class="type-text">{{ note.type }}</span>
       </div>
 
-      <!-- ACTIONS -->
       <div class="actions">
-        <button class="icon-btn" @click="startEdit" title="Редактировать">
-          <span class="icon">✏️</span>
-        </button>
-
-        <button class="icon-btn delete" @click="deleteNote" title="Удалить">
-          <span class="icon">🗑️</span>
-        </button>
+        <button class="btn icon-btn" @click="startEdit" title="Редактировать">✏️</button>
+        <button class="btn icon-btn btn--ghost delete" @click="deleteNote" title="Удалить">🗑️</button>
       </div>
     </div>
 
-    <!-- TEXT / EDIT MODE -->
     <div class="note-card__content">
-      <div v-if="!isEditing" class="note-card__text" @click="startEdit">
-        {{ note.text }}
-      </div>
+      <div v-if="!isEditing" class="note-card__text" @click="startEdit">{{ note.text }}</div>
 
       <div v-else class="edit-block">
         <textarea v-model="editText" class="edit-textarea"></textarea>
-
         <div class="edit-actions">
-          <button class="save-btn" @click="saveEdit">Сохранить</button>
-          <button class="cancel-btn" @click="cancelEdit">Отмена</button>
+          <button class="btn btn--primary" @click="saveEdit">Сохранить</button>
+          <button class="btn btn--ghost" @click="cancelEdit">Отмена</button>
         </div>
       </div>
     </div>

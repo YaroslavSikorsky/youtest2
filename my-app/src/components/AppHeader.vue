@@ -13,31 +13,31 @@
 
       <!-- Правая часть — навигация -->
       <nav class="nav">
-        <!-- Dropdown для пользователя -->
         <div v-if="user" class="user-dropdown" ref="dropdownRef">
-          <div class="dropdown-button" @click="toggleDropdown">
+          <button class="btn btn--primary" @click="toggleDropdown">
             {{ currentSection }}
             <span class="arrow" :class="{ open: dropdownOpen }">▼</span>
-          </div>
+          </button>
 
           <transition name="fade">
             <div v-if="dropdownOpen" class="dropdown-menu">
-              <router-link to="/profile" class="dropdown-item" @click.native="selectSection('Профиль')">
+              <router-link to="/profile" class="dropdown-item btn" @click="selectSection('Профиль')">
                 Профиль
               </router-link>
-              <router-link v-for="item in menuItems"
-                           :key="item.label"
-                           :to="item.path"
-                           class="dropdown-item"
-                           @click.native="selectSection(item.label)">
+              <router-link
+                  v-for="item in menuItems"
+                  :key="item.label"
+                  :to="item.path"
+                  class="dropdown-item btn"
+                  @click="selectSection(item.label)"
+              >
                 {{ item.label }}
               </router-link>
-              <button class="dropdown-item btn-logout" @click="logout">Выйти</button>
+              <button class="btn btn--ghost dropdown-item" @click="logout">Выйти</button>
             </div>
           </transition>
         </div>
 
-        <!-- Если пользователь не залогинен — кнопка Войти -->
         <router-link v-else to="/login" class="btn btn--primary">Войти</router-link>
       </nav>
     </div>
@@ -62,21 +62,16 @@ export default {
   mounted() {
     const savedUser = localStorage.getItem("user");
     if (savedUser) this.user = JSON.parse(savedUser);
-
     document.addEventListener("click", this.handleClickOutside);
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
-    toggleDropdown() {
-      this.dropdownOpen = !this.dropdownOpen;
-    },
+    toggleDropdown() { this.dropdownOpen = !this.dropdownOpen; },
     handleClickOutside(e) {
       const dropdown = this.$refs.dropdownRef;
-      if (dropdown && !dropdown.contains(e.target)) {
-        this.dropdownOpen = false;
-      }
+      if (dropdown && !dropdown.contains(e.target)) this.dropdownOpen = false;
     },
     selectSection(label) {
       this.currentSection = label;
