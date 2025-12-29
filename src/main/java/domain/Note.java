@@ -1,21 +1,33 @@
-package bot;
+package domain;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
+@Getter
+@Setter
 @Table("notes")
 public class Note {
 
     @Id
-    public String id;
+    public String id; //uuid
     @Column("data")
     public String text;
     public NoteType type;
 
-    public Note(String text) {
+    @Column("user_id")
+    public UUID userId;
+
+    @PersistenceConstructor
+    public Note(String text, NoteType type, UUID userId) {
         this.text = text;
-        this.type = NoteType.ART;
+        this.type = type;
+        this.userId = userId;
 
     }
 
@@ -25,21 +37,11 @@ public class Note {
                 "id='" + id + '\'' +
                 ", text='" + text + '\'' +
                 ", type=" + type +
+                ", userId=" + userId +
                 '}';
     }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public NoteType getType() {
-        return type;
-    }
 }
+
 // Альтернативный стиль (одним словом, но символично):
 //
 //Art → Resonance
