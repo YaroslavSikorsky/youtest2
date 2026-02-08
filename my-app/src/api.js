@@ -1,6 +1,11 @@
 // src/api.js
 
-export const API_URL = "http://localhost:8087";
+// Используем переменную окружения для URL API
+// В разработке: http://localhost:8087
+// В продакшене: значение из VITE_API_URL
+export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8087";
+
+console.log("API URL:", API_URL); // Для отладки
 
 /**
  * Получение списка заметок.
