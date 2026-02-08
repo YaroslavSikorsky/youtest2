@@ -2,13 +2,14 @@
   <header class="app-header">
     <div class="app-header__inner">
       <!-- Левая часть — бренд -->
-      <router-link to="/" class="brand-text">
-        <span class="brand-thin">YOU</span>
+      <router-link to="/" class="brand-center">
+<!--        <span class="brand-thin">YOU</span>-->
+        <img src="@/assets/1111.png" alt="logo"/>
       </router-link>
 
       <!-- Центр — логотип -->
       <router-link to="/" class="brand-center">
-        <img src="@/assets/1111.png" alt="logo"/>
+<!--        <img src="@/assets/1111.png" alt="logo"/>-->
       </router-link>
 
       <!-- Правая часть — навигация -->
@@ -16,14 +17,21 @@
         <div v-if="user" class="user-dropdown" ref="dropdownRef">
           <button class="btn btn--primary" @click="toggleDropdown">
             {{ currentSection }}
-            <span class="arrow" :class="{ open: dropdownOpen }">▼</span>
+            <span class="arrow" :class="{ open: dropdownOpen }">
+<!--              ▼-->
+            </span>
           </button>
 
           <transition name="fade">
             <div v-if="dropdownOpen" class="dropdown-menu">
-              <router-link to="/profile" class="dropdown-item btn" @click="selectSection('Профиль')">
+              <router-link
+                  to="/profile"
+                  class="dropdown-item btn"
+                  @click="selectSection('Профиль')"
+              >
                 Профиль
               </router-link>
+
               <router-link
                   v-for="item in menuItems"
                   :key="item.label"
@@ -33,12 +41,20 @@
               >
                 {{ item.label }}
               </router-link>
-              <button class="btn btn--ghost dropdown-item" @click="logout">Выйти</button>
+
+              <button
+                  class="btn btn--ghost dropdown-item"
+                  @click="logout"
+              >
+                Выйти
+              </button>
             </div>
           </transition>
         </div>
 
-        <router-link v-else to="/login" class="btn btn--primary">Войти</router-link>
+        <router-link v-else to="/login" class="btn btn--primary">
+          Войти
+        </router-link>
       </nav>
     </div>
   </header>
@@ -59,24 +75,45 @@ export default {
       ]
     };
   },
+
   mounted() {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) this.user = JSON.parse(savedUser);
+    this.syncUser();
     document.addEventListener("click", this.handleClickOutside);
   },
+
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
   },
+
+  watch: {
+    // 🔥 ключевое исправление
+    $route() {
+      this.syncUser();
+    }
+  },
+
   methods: {
-    toggleDropdown() { this.dropdownOpen = !this.dropdownOpen; },
+    syncUser() {
+      const savedUser = localStorage.getItem("user");
+      this.user = savedUser ? JSON.parse(savedUser) : null;
+    },
+
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+    },
+
     handleClickOutside(e) {
       const dropdown = this.$refs.dropdownRef;
-      if (dropdown && !dropdown.contains(e.target)) this.dropdownOpen = false;
+      if (dropdown && !dropdown.contains(e.target)) {
+        this.dropdownOpen = false;
+      }
     },
+
     selectSection(label) {
       this.currentSection = label;
       this.dropdownOpen = false;
     },
+
     logout() {
       localStorage.removeItem("user");
       localStorage.removeItem("auth");
@@ -87,6 +124,11 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+/* стили без изменений */
+</style>
+
 
 <style scoped>
 .app-header {
@@ -138,8 +180,11 @@ export default {
 
 .user-dropdown {
   position: relative;
-}
+  display: inline-block;
+  cursor: pointer;
 
+  margin-left: auto; /* 🔹 прижимаем к правому краю */
+}
 .dropdown-button {
   padding: 8px 14px;
   border-radius: 12px;
@@ -164,7 +209,10 @@ export default {
 .dropdown-menu {
   position: absolute;
   top: 100%;
-  right: 0;
+  right: 0;          /* прижато к правому краю родителя */
+  left: auto;        /* отключаем левое позиционирование */
+  transform: none;   /* отключаем смещения */
+
   background: var(--ui-surface);
   border: 1px solid var(--ui-border);
   border-radius: 12px;

@@ -1,78 +1,62 @@
 <template>
-  <div class="note-card">
+  <div class="note-card" @click="$emit('open', note)">
+    <!-- Header -->
     <div class="note-card__header">
-      <div class="type-block">
-        <span class="note-card__dot" :class="dotClass"></span>
-        <span class="type-text">{{ note.type }}</span>
-      </div>
+      <span class="note-card__dot" :class="statusClass"></span>
+      <div class="note-card__title">{{ note.title || note.type }}</div>
 
-      <div class="actions">
-        <button class="btn icon-btn" @click="startEdit" title="Редактировать">✏️</button>
-        <button class="btn icon-btn btn--ghost delete" @click="deleteNote" title="Удалить">🗑️</button>
-      </div>
-    </div>
-
-    <div class="note-card__content">
-      <div v-if="!isEditing" class="note-card__text" @click="startEdit">{{ note.text }}</div>
-
-      <div v-else class="edit-block">
-        <textarea v-model="editText" class="edit-textarea"></textarea>
-        <div class="edit-actions">
-          <button class="btn btn--primary" @click="saveEdit">Сохранить</button>
-          <button class="btn btn--ghost" @click="cancelEdit">Отмена</button>
-        </div>
+      <!-- Индикаторы -->
+      <div class="note-card__badges">
+        <span v-if="note.done" class="badge badge--done" title="Выполнено">✓</span>
+        <span v-if="note.calendar" class="badge badge--calendar" title="В календаре">📅</span>
       </div>
     </div>
+
+    <!-- Text -->
+    <div class="note-card__text">{{ note.text }}</div>
+
+    <!-- Footer -->
+    <div class="note-card__footer">
+      <span class="note-card__type">{{ note.type }}</span>
+      <span class="note-card__date">{{ formattedDate }}</span>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="note-card__status-bar" :class="statusClass"></div>
   </div>
 </template>
 
 <script>
 export default {
   name: "NoteCard",
-  props: {note: Object},
-  data() {
-    return {
-      isEditing: false,
-      editText: ""
-    };
-  },
-  computed: {
-    dotClass() {
-      const t = (this.note.type || "").toLowerCase();
-      return {
-        "note-card__dot--art": t === "art",
-        "note-card__dot--body": t === "body",
-        "note-card__dot--mind": t === "mind"
-      };
+  props: {
+    note: {
+      type: Object,
+      required: true
     }
   },
-  methods: {
-    startEdit() {
-      this.isEditing = true;
-      this.editText = this.note.text;
-    },
-    cancelEdit() {
-      this.isEditing = false;
-    },
-    async saveEdit() {
-      await fetch(`http://localhost:8087/notes/${this.note.id}`, {
-        method: "PUT",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          text: this.editText,
-          type: this.note.type
-        })
-      });
 
-      this.isEditing = false;
-      this.$emit("updated");
-    },
-    async deleteNote() {
-      await fetch(`http://localhost:8087/notes/${this.note.id}`, {
-        method: "DELETE"
-      });
+  computed: {
+    formattedDate() {
+      if (!this.note.createdAt) return "Без даты";
 
-      this.$emit("updated");
+      const date = new Date(this.note.createdAt);
+      const now = new Date();
+      const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) return "Сегодня";
+      if (diffDays === 1) return "Вчера";
+      if (diffDays < 7) return `${diffDays} дн. назад`;
+
+      return date.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit"
+      });
+    },
+
+    statusClass() {
+      const status = this.note.status || 'TODO';
+      return `status--${status.toLowerCase()}`;
     }
   }
 };
@@ -81,154 +65,167 @@ export default {
 <style scoped>
 .note-card {
   background: var(--ui-surface);
-  border-radius: 16px;
-  padding: 18px;
+  border-radius: 12px;
+  padding: 18px 20px;
   border: 1px solid var(--ui-border);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .note-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(107, 124, 255, 0.15);
+  border-color: var(--ui-primary);
 }
 
 /* HEADER */
 .note-card__header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.type-block {
-  display: flex;
-  align-items: center;
+  margin-bottom: 10px;
   gap: 10px;
 }
 
-/* TYPE TEXT */
-.type-text {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ui-text-muted);
-}
-
-/* DOT COLORS */
 .note-card__dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--tag-muted);
+  flex-shrink: 0;
+  transition: all 0.2s;
 }
 
-.note-card__dot--art {
-  background: #d7c3ff;
+.note-card__dot.status--todo {
+  background: #fbbf24;
 }
 
-.note-card__dot--body {
-  background: #b8f3d9;
+.note-card__dot.status--in_progress {
+  background: #3b82f6;
+  animation: pulse 2s infinite;
 }
 
-.note-card__dot--mind {
-  background: #c2d9ff;
+.note-card__dot.status--done {
+  background: #10b981;
 }
 
-/* ACTION BUTTONS — улучшенные */
-.actions {
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.note-card__title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ui-text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-card__badges {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
-.icon-btn {
-  width: 32px;
-  height: 32px;
-  background: var(--ui-surface);
-  border: 1px solid var(--ui-border);
-  border-radius: 10px;
-  display: flex;
+.badge {
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all .2s ease;
-  box-shadow: var(--shadow-sm);
 }
 
-.icon-btn:hover {
-  background: var(--ui-primary);
-  color: #fff;
-  border-color: var(--ui-primary);
-  box-shadow: 0 8px 20px rgba(107, 124, 255, 0.25);
+.badge--done {
+  background: #d1fae5;
+  color: #065f46;
 }
 
-.icon-btn.delete:hover {
-  background: #ff6262;
-  border-color: #ff6262;
-  color: white;
-  box-shadow: 0 8px 20px rgba(255, 54, 54, 0.25);
-}
-
-.icon {
-  font-size: 16px;
+.badge--calendar {
+  background: #dbeafe;
+  font-size: 12px;
 }
 
 /* TEXT */
 .note-card__text {
-  font-size: 15px;
-  color: var(--ui-text);
-  line-height: 1.55;
-  white-space: pre-wrap;
-}
-
-/* EDIT MODE */
-.edit-block {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.edit-textarea {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid var(--ui-border);
-  resize: vertical;
-  background: #fff;
-  min-height: 120px;
-  font-size: 15px;
+  font-size: 14px;
+  color: var(--ui-text-muted);
   line-height: 1.5;
+  margin-bottom: 14px;
+  max-height: 65px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
-.edit-actions {
+/* FOOTER */
+.note-card__footer {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--ui-text-muted);
+  gap: 8px;
 }
 
-.save-btn {
-  padding: 8px 14px;
-  border-radius: 10px;
-  background: var(--ui-primary);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
+.note-card__type {
+  font-weight: 600;
+  background: rgba(107, 124, 255, 0.1);
+  color: var(--ui-primary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.save-btn:hover {
-  opacity: 0.9;
+.note-card__date {
+  font-style: italic;
+  white-space: nowrap;
 }
 
-.cancel-btn {
-  padding: 8px 14px;
-  border-radius: 10px;
-  background: #ddd;
-  border: none;
-  cursor: pointer;
+/* STATUS BAR */
+.note-card__status-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
 }
 
-.cancel-btn:hover {
-  background: #ccc;
+.note-card__status-bar.status--todo {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+}
+
+.note-card__status-bar.status--in_progress {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.note-card__status-bar.status--done {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* MOBILE */
+@media (max-width: 640px) {
+  .note-card {
+    padding: 16px;
+  }
+
+  .note-card__title {
+    font-size: 15px;
+  }
+
+  .note-card__text {
+    font-size: 13px;
+    max-height: 60px;
+  }
 }
 </style>

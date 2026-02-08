@@ -11,13 +11,24 @@
           </p>
         </div>
 
-        <!-- SECTION: TYPES OF NOTES -->
+        <!-- SECTION: VISIBLE NOTE TYPES -->
         <div class="settings-section">
           <div class="section-title">Видимые типы заметок</div>
           <div class="types-grid">
             <label v-for="t in allTypes" :key="t" class="type-checkbox">
               <input type="checkbox" v-model="visibleTypes" :value="t" />
               {{ t }}
+            </label>
+          </div>
+        </div>
+
+        <!-- SECTION: VISIBLE MODAL ELEMENTS -->
+        <div class="settings-section">
+          <div class="section-title">Элементы в модалке заметки</div>
+          <div class="types-grid">
+            <label v-for="elem in allModalElements" :key="elem.value" class="type-checkbox">
+              <input type="checkbox" v-model="visibleElements" :value="elem.value" />
+              {{ elem.label }}
             </label>
           </div>
         </div>
@@ -55,18 +66,26 @@
 </template>
 
 <script>
+import { getTypes } from "@/api";
+
 export default {
   name: "SettingsPage",
   data() {
     return {
       user: null,
-      allTypes: ["GAME", "HOME", "FILMS", "WISHLIST", "PARENT", "APARTMENT"],
+      allTypes: [], // будут загружены с сервера
       visibleTypes: [],
+      allModalElements: [
+        { value: "done", label: "Сделано" },
+        { value: "calendar", label: "В календарь" },
+        { value: "calendarDate", label: "Выбор даты" }
+      ],
+      visibleElements: [],
       members: [],
       inviteEmail: ""
     };
   },
-  mounted() {
+  async mounted() {
     const savedUser = localStorage.getItem("user");
     if (!savedUser) {
       this.$router.push("/login");
@@ -74,15 +93,25 @@ export default {
     }
     this.user = JSON.parse(savedUser);
 
-    // Загружаем текущие настройки
+    // Загружаем все типы заметок с сервера
+    try {
+      this.allTypes = await getTypes();
+    } catch {
+      // fallback, если сервер недоступен
+      this.allTypes = ["GAME", "HOME", "FILMS", "WISHLIST", "PARENT", "APARTMENT", "TODO", "PROJECT", "PLACE"];
+    }
+
+    // Загружаем настройки из localStorage
     const savedSettings = JSON.parse(localStorage.getItem("settings")) || {};
     this.visibleTypes = savedSettings.visibleTypes || [...this.allTypes];
+    this.visibleElements = savedSettings.visibleElements || this.allModalElements.map(e => e.value);
     this.members = JSON.parse(localStorage.getItem("groupMembers")) || [];
   },
   methods: {
     save() {
       const settings = {
-        visibleTypes: this.visibleTypes
+        visibleTypes: this.visibleTypes,
+        visibleElements: this.visibleElements
       };
       localStorage.setItem("settings", JSON.stringify(settings));
       localStorage.setItem("groupMembers", JSON.stringify(this.members));
@@ -152,7 +181,7 @@ export default {
   color: var(--ui-text-muted);
 }
 
-/* TYPES GRID */
+/* GRID FOR CHECKBOXES */
 .types-grid {
   display: flex;
   flex-wrap: wrap;

@@ -1,8 +1,8 @@
 :root {
     --ui-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    --ui-radius-sm: 10px;
-    --ui-radius-md: 14px;
-    --ui-radius-lg: 20px;
+    --ui-radius-sm: 8px;
+    --ui-radius-md: 12px;
+    --ui-radius-lg: 18px;
     --ui-bg: #f7f8fc;
     --ui-surface: #ffffff;
     --ui-text: #111318;
@@ -11,13 +11,13 @@
     --ui-primary: #6b7cff;
     --ui-primary-600: #5867e6;
     --tag-muted: #dfe2ec;
-    --shadow-sm: 0 2px 6px rgba(13, 18, 36, 0.04);
-    --shadow-md: 0 6px 16px rgba(13, 18, 36, 0.06);
-    --shadow-lg: 0 14px 28px rgba(13, 18, 36, 0.10);
+    --shadow-sm: 0 1px 4px rgba(13, 18, 36, 0.06);
+    --shadow-md: 0 4px 12px rgba(13, 18, 36, 0.08);
+    --shadow-lg: 0 12px 24px rgba(13, 18, 36, 0.12);
 }
 
 * {
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 html, body, #app {
@@ -36,65 +36,72 @@ html, body, #app {
     align-items: center;
     justify-content: center;
     padding: 10px 16px;
-    border-radius: 12px;
+    border-radius: var(--ui-radius-md);
     border: none;
     cursor: pointer;
     font-weight: 600;
     font-size: 15px;
-    transition: all .18s ease;
+    transition: all .2s ease;
+    text-decoration: none;
 }
 
 .btn--primary {
     background: var(--ui-primary);
     color: #fff;
-    box-shadow: var(--shadow-sm)
+    box-shadow: var(--shadow-sm);
 }
 
 .btn--primary:hover {
     background: var(--ui-primary-600);
     box-shadow: var(--shadow-md);
-    transform: translateY(-2px)
+    transform: translateY(-1px);
 }
 
 .btn--ghost {
     background: transparent;
     color: var(--ui-primary);
-    border-radius: 12px;
-    padding: 8px 14px
+    border-radius: var(--ui-radius-md);
+    padding: 8px 14px;
+    font-weight: 600;
+    transition: all .2s;
+}
+
+.btn--ghost:hover {
+    background: rgba(107, 124, 255, 0.08);
 }
 
 .btn--full {
-    width: 100%
+    width: 100%;
 }
 
 /* Inputs */
 .input {
     width: 100%;
     padding: 12px 14px;
-    border-radius: 12px;
+    border-radius: var(--ui-radius-md);
     border: 1px solid var(--ui-border);
     background: var(--ui-surface);
     font-size: 15px;
     outline: none;
     box-shadow: none;
-    transition: box-shadow .18s, border-color .18s;
+    transition: box-shadow .2s, border-color .2s;
 }
 
 .input:focus {
     border-color: var(--ui-primary);
-    box-shadow: 0 0 0 6px rgba(107, 124, 255, 0.08)
+    box-shadow: 0 0 0 6px rgba(107, 124, 255, 0.08);
 }
 
-/* App header (reusable) */
+/* App Header */
 .app-header {
     position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    top: 0;
-    height: 72px;
+    height: 68px;
     background: var(--ui-surface);
     border-bottom: 1px solid var(--ui-border);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(6px);
     z-index: 1100;
 }
 
@@ -114,114 +121,78 @@ html, body, #app {
     gap: 12px;
     text-decoration: none;
     color: var(--ui-primary);
-    font-weight: 800;
-    letter-spacing: 2px;
+    font-weight: 700;
+    letter-spacing: 1px;
     font-size: 20px;
 }
 
 .brand img {
-    height: 36px;
-    width: auto;
-    display: block
+    height: 34px;
 }
 
-.header-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center
-}
-
-.container {
-    max-width: 900px;
-    margin: 120px auto 80px;
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Type pills */
-.ui-type-select {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 30px 0
-}
-
+/* Type Pills */
 .ui-type-pill {
     padding: 10px 18px;
-    border-radius: 14px;
-    background: #fff;
+    border-radius: var(--ui-radius-md);
+    background: var(--ui-surface);
     border: 1px solid var(--ui-border);
     cursor: pointer;
     font-weight: 600;
-    transition: all .18s;
     font-size: 14px;
-    color: #333;
+    color: var(--ui-text);
+    transition: all .2s ease;
 }
 
 .ui-type-pill:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm)
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
 }
 
 .ui-type-pill.is-active {
     background: var(--ui-primary);
     color: #fff;
     border-color: var(--ui-primary);
-    box-shadow: 0 10px 22px rgba(107, 124, 255, 0.14)
+    box-shadow: 0 6px 16px rgba(107, 124, 255, 0.14);
 }
 
-/* Notes list and cards */
-.notes-list {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 12px
-}
-
+/* Notes Cards */
 .note-card {
     background: var(--ui-surface);
-    border-radius: 16px;
+    border-radius: var(--ui-radius-lg);
     padding: 18px;
-    border: 1px solid var(--ui-border);
+    border: none;
     box-shadow: var(--shadow-sm);
-    transition: transform .18s, box-shadow .18s;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    transition: transform .2s, box-shadow .2s;
 }
 
 .note-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg)
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .note-card__header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-weight: 700;
+    gap: 10px;
+    font-weight: 600;
     color: var(--ui-text-muted);
-    font-size: 14px
+    font-size: 14px;
 }
 
 .note-card__dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--tag-muted)
+    background: var(--tag-muted);
 }
 
 .note-card__text {
-    color: var(--ui-text);
     font-size: 15px;
-    line-height: 1.5
+    color: var(--ui-text);
+    line-height: 1.5;
 }
 
-/* Notes page layout, forms, filters */
+/* Notes Page */
 .notes-container {
     max-width: 760px;
     margin: 120px auto 60px;
@@ -234,23 +205,10 @@ html, body, #app {
 .note-create-card {
     background: var(--ui-surface);
     padding: 22px 24px;
-    border-radius: 18px;
+    border-radius: var(--ui-radius-lg);
     box-shadow: var(--shadow-md);
-    border: 1px solid var(--ui-border);
-    margin-bottom: 26px;
-}
-
-.note-filters {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 26px;
-}
-
-.notes-list-wrapper {
-    width: 100%;
-    margin-top: 10px;
+    border: none;
+    margin-bottom: 24px;
 }
 
 /* Landing */
@@ -258,7 +216,7 @@ html, body, #app {
     min-height: 100vh;
     background: var(--ui-bg);
     display: flex;
-    flex-direction: column
+    flex-direction: column;
 }
 
 .landing-hero {
@@ -267,72 +225,48 @@ html, body, #app {
     padding: 0 20px;
     display: flex;
     gap: 48px;
-    align-items: center
+    align-items: center;
 }
 
 .hero-left {
     flex: 1;
-    max-width: 520px
+    max-width: 520px;
 }
 
 .hero-title {
     font-size: 44px;
-    line-height: 1.05;
-    margin-bottom: 18px;
-    font-weight: 800
+    font-weight: 800;
+    margin-bottom: 16px;
 }
 
 .hero-subtitle {
     color: var(--ui-text-muted);
-    margin-bottom: 22px
+    margin-bottom: 20px;
+    font-weight: 400;
 }
 
 .hero-buttons {
     display: flex;
-    gap: 14px;
-    margin-bottom: 18px
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .hero-preview {
     width: 520px;
     height: 320px;
-    border-radius: 18px;
+    border-radius: var(--ui-radius-lg);
     background: linear-gradient(135deg, #97a7ff 0%, #e2a7ff 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     font-weight: 700;
-    box-shadow: var(--shadow-md)
+    box-shadow: var(--shadow-md);
 }
 
 /* Small screens */
 @media (max-width: 900px) {
-    .landing-hero {
-        flex-direction: column;
-        padding: 40px 20px
-    }
-
-    .hero-preview {
-        width: 100%;
-        height: 200px
-    }
-
-    .container {
-        margin-top: 100px
-    }
-
-    .btn {
-        text-decoration: none; /* убирает подчеркивание ссылок */
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 16px;
-        border-radius: 12px;
-        border: none;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 15px;
-        transition: all .18s ease;
-    }
+    .landing-hero { flex-direction: column; padding: 40px 20px; }
+    .hero-preview { width: 100%; height: 200px; }
+    .container { margin-top: 100px; }
 }

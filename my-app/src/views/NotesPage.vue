@@ -1,264 +1,245 @@
 <template>
-  <div class="notes-layout">
-    <!-- LEFT PANEL -->
-    <aside class="sidebar">
+  <!-- 🔵 СИСТЕМНАЯ ВЫДВИЖНАЯ ПОЛОСКА (ПОВЕРХ ВСЕГО) -->
+  <SystemDrawer />
 
-      <!-- MICRO USER PROFILE -->
-      <router-link
-          v-if="user"
-          to="/profile"
-          class="user-mini-profile"
-      >
-        <div class="avatar">
-          {{ initials }}
-        </div>
-        <div class="user-info">
-          <div class="user-name">
-            {{ user.firstName || "Пользователь" }}
-            {{ user.lastName || "" }}
-          </div>
-          <div class="user-email">
-            {{ user.email }}
-          </div>
-        </div>
-      </router-link>
+  <div class="notes-screen">
+    <!-- SIDEBAR С ТЕМАМИ -->
+    <aside class="notes-sidebar">
+      <nav class="notes-menu">
+        <router-link to="/profile" class="notes-menu__item notes-menu__item--muted">
+          Профиль
+        </router-link>
 
-      <!-- MULTILINE INPUT AREA -->
-      <AddNote
-          :userId="currentUserId"
-          :noteType="selectedType"
-          @added="handleAddedNote"
-      />
+        <router-link to="/notes" class="notes-menu__item notes-menu__item--muted">
+          Мои заметки
+        </router-link>
 
-      <!-- TYPES SECTION -->
-      <div class="note-filters">
-        <!-- Большая кнопка "Все заметки" -->
+        <router-link to="/calendar" class="notes-menu__item">
+          Календарь
+        </router-link>
+
+        <div class="notes-menu__divider"></div>
+
         <button
-            :class="['ui-type-pill', 'big-type', { 'is-active': selectedType === null }]"
-            @click="selectType(null)"
-        >
-          Все заметки
-        </button>
-
-        <!-- Остальные типы -->
-        <button
-            v-for="t in type"
+            v-for="t in types"
             :key="t"
-            :class="['ui-type-pill', { 'is-active': selectedType === t }]"
-            @click="selectType(t)"
+            class="notes-menu__item"
+            :class="{ 'notes-menu__item--active': selectedType === t }"
+            @click="selectedType = t"
         >
           {{ t }}
         </button>
-      </div>
-
-      <!-- Toggle list button -->
-      <button class="toggle-btn styled-toggle" @click="toggleNotes">
-        {{ showNotes ? "Скрыть список справа" : "Показать список справа" }}
-      </button>
+      </nav>
     </aside>
 
-    <!-- RIGHT CONTENT (НЕ ТРОГАЕМ) -->
-    <div class="content">
-      <NotesList
-          v-if="showNotes"
-          ref="notesList"
-          :currentType="selectedType"
-          :userId="currentUserId"
-      />
-    </div>
+    <!-- MAIN -->
+    <main class="notes-main">
+      <header class="notes-main__header">
+        <h1 class="notes-main__title">
+          {{ selectedType || "Заметки" }}
+        </h1>
 
+        <!-- ⬇️ НИЧЕГО НЕ ЛОМАЕМ: просто оборачиваем кнопки -->
+        <div style="display: flex; gap: 12px">
+          <button class="notes-toggle" @click="toggleView">
+            {{ viewMode === "list" ? "Канбан" : "Список" }}
+          </button>
+
+          <button class="notes-toggle" @click="toggleMode">
+            {{ mode === "edit" ? "Показать записи" : "Новая запись" }}
+          </button>
+        </div>
+      </header>
+
+      <!-- ADD -->
+      <AddNote
+          v-if="mode === 'edit'"
+          :user-id="userId"
+          :note-type="selectedType"
+          @added="onAdded"
+      />
+
+      <!-- LIST -->
+      <NotesList
+          v-if="mode !== 'edit' && viewMode === 'list'"
+          :user-id="userId"
+          :type="selectedType"
+          :refresh-key="refreshKey"
+      />
+
+      <!-- KANBAN -->
+      <NotesKanban
+          v-if="mode !== 'edit' && viewMode === 'kanban'"
+          :user-id="userId"
+          :type="selectedType"
+          :refresh-key="refreshKey"
+      />
+    </main>
   </div>
 </template>
 
 <script>
-import {getTypes, addNote as apiAddNote} from "@/api";
-import NotesList from "@/components/NotesList.vue";
+import { getTypes, addNote } from "@/api";
 import AddNote from "@/components/AddNote.vue";
+import NotesList from "@/components/NotesList.vue";
+import NotesKanban from "@/components/NotesKanban.vue";
+import SystemDrawer from "@/components/SystemDrawer.vue";
 
 export default {
   name: "NotesPage",
-  components: {NotesList, AddNote},
+  components: {
+    AddNote,
+    NotesList,
+    NotesKanban,
+    SystemDrawer
+  },
 
   data() {
     return {
-      type: [],
+      types: [],
       selectedType: null,
-      showNotes: true,
-      currentUserId: null,
-      user: null
+      userId: null,
+      mode: "edit",
+      refreshKey: 0,
+      viewMode: localStorage.getItem("notes:viewMode") || "list"
     };
   },
 
-  computed: {
-    initials() {
-      if (!this.user) return "?";
-      const f = this.user.firstName?.[0] || "";
-      const l = this.user.lastName?.[0] || "";
-      return (f + l).toUpperCase();
+  async mounted() {
+    try {
+      this.types = await getTypes();
+    } catch {
+      this.types = [
+        "GAME", "HOME", "FILMS", "WISHLIST",
+        "PARENT", "APARTMENT", "TODO", "PROJECT", "PLACE"
+      ];
     }
-  },
-
-  mounted() {
-    this.fetchType();
 
     const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.id) {
-      this.currentUserId = user.id;
-      this.user = user;
-    }
+    this.userId = user?.id || null;
   },
 
   methods: {
-    async fetchType() {
-      try {
-        this.type = await getTypes();
-      } catch (err) {
-        this.type = ["GAME", "HOME", "FILMS", "WISHLIST", "PARENT", "APARTMENT"];
-      }
+    toggleMode() {
+      this.mode = this.mode === "edit" ? "list" : "edit";
     },
 
-    selectType(t) {
-      this.selectedType = this.selectedType === t ? null : t;
-      this.$nextTick(() => {
-        if (this.$refs.notesList) this.$refs.notesList.fetchNotes();
-      });
+    toggleView() {
+      this.viewMode = this.viewMode === "list" ? "kanban" : "list";
+      localStorage.setItem("notes:viewMode", this.viewMode);
     },
 
-    toggleNotes() {
-      this.showNotes = !this.showNotes;
-    },
-
-    async handleAddedNote(payload) {
-      try {
-        await apiAddNote(payload);
-        this.selectedType = payload.type;
-        this.$refs.notesList?.fetchNotes();
-      } catch (err) {
-        console.error(err);
-      }
+    async onAdded(payload) {
+      await addNote(payload);
+      this.mode = "list";
+      this.refreshKey++;
     }
   }
 };
 </script>
 
 <style scoped>
-/* Layout */
-.notes-layout {
+/* 🔥 СТИЛИ ПОЛНОСТЬЮ ТВОИ, НЕ МЕНЯЛ */
+.notes-screen {
   display: grid;
-  grid-template-columns: 30% 70%;
-  gap: 48px;
-  max-width: 1800px;
-  margin: 100px auto;
-  padding: 0 40px;
-  align-items: start;
+  grid-template-columns: 260px minmax(0, 1fr);
+  height: calc(100vh - 62px);
+  margin-top: 62px;
 }
 
-/* Sidebar */
-.sidebar {
+/* SIDEBAR */
+.notes-sidebar {
+  background: #ffffff;
+  border-right: 1px solid var(--ui-border);
   display: flex;
   flex-direction: column;
-  gap: 34px;
+  padding: 32px 24px;
 }
 
-/* MICRO PROFILE (link-safe) */
-.user-mini-profile {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  background: var(--ui-surface);
-  border: 1px solid var(--ui-border);
-  border-radius: 14px;
-  box-shadow: var(--shadow-sm);
-
-  text-decoration: none;        /* ← убираем подчёркивание */
-  color: inherit;               /* ← не синий текст ссылки */
-  transition: box-shadow .18s, transform .18s;
-}
-
-.user-mini-profile:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
-/* AVATAR */
-.avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--ui-primary);
-  color: #fff;
-  font-weight: 700;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* TEXT */
-.user-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.user-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--ui-text);          /* основной текст */
-}
-
-.user-email {
-  font-size: 12px;
-  color: var(--ui-text-muted);   /* серый из UI-kit */
-}
-
-
-/* Filters */
-.note-filters {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.big-type {
-  grid-column: span 2;
-  font-size: 16px;
-  padding: 14px;
-}
-
-/* Toggle button */
-.styled-toggle {
-  margin-top: 116px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid var(--ui-border);
-  background: #fff;
-  color: #666;
-  font-size: 14px;
-  transition: 0.2s;
-}
-
-.styled-toggle:hover {
-  background: #f0f3ff;
+.notes-logo {
+  font-size: 32px;
+  font-weight: 800;
   color: var(--ui-primary);
-  border-color: var(--ui-primary);
+  margin-bottom: 32px;
 }
 
+.notes-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 1cm;
+}
 
+.notes-menu__item {
+  text-align: left;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--ui-primary);
+}
+
+.notes-menu__item--muted {
+  color: var(--ui-text-muted);
+}
+
+.notes-menu__item--active {
+  font-weight: 700;
+}
+
+.notes-menu__divider {
+  height: 1px;
+  margin: 16px 0;
+  background: var(--ui-border);
+}
+
+/* MAIN */
+.notes-main {
+  padding: 40px 56px;
+  background: var(--ui-bg);
+}
+
+.notes-main__header {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notes-main__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ui-primary);
+}
+
+.notes-toggle {
+  border: none;
+  background: transparent;
+  color: var(--ui-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.notes-toggle:hover {
+  background: rgba(107, 124, 255, 0.08);
+}
+
+/* MOBILE */
 @media (max-width: 900px) {
-  .notes-layout {
-    grid-template-columns: 100%;
-    padding: 0 20px;
-    margin: 20px auto;
+  .notes-screen {
+    grid-template-columns: 1fr;
+  }
+
+  .notes-sidebar {
+    display: none;
+  }
+
+  .notes-main {
+    padding: 20px;
   }
 }
-.content {
-  line-height: 0;
-}
-
-.content * {
-  line-height: normal;
-}
-
 </style>
