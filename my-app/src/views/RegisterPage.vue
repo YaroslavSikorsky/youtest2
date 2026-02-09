@@ -73,7 +73,7 @@
 
 <script>
 import AppHeader from "@/components/AppHeader.vue";
-
+import { API_URL } from "@/api";
 export default {
   components: {AppHeader},
 
@@ -92,7 +92,7 @@ export default {
       this.loading = true;
 
       try {
-        const res = await fetch("http://localhost:8087/notes/users", {
+        const res = await fetch(`${API_URL}/notes/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
