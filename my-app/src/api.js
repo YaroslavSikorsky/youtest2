@@ -7,7 +7,7 @@
 export const API_URL = 'https://youtest2.railway.internal';
 
 
-console.log("API URL:", API_URL); // Для отладки
+console.log("API URL:", API_URL); // Для отладки и
 
 /**
  * Получение списка заметок.
