@@ -89,6 +89,7 @@ export default {
   methods: {
     async handleRegister() {
       this.error = null;
+
       this.loading = true;
 
       try {
