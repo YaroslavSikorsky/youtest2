@@ -3,7 +3,9 @@
 // Используем переменную окружения для URL API
 // В разработке: http://localhost:8087
 // В продакшене: значение из VITE_API_URL
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8087";
+// export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8087";
+export const API_URL = 'https://youtest2.railway.internal';
+
 
 console.log("API URL:", API_URL); // Для отладки
 
