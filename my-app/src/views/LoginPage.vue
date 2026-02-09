@@ -25,14 +25,14 @@
 
 <script>
 import AppHeader from "@/components/AppHeader.vue";
-
+import { API_URL } from "@/api";
 export default {
   components: { AppHeader },
   data() { return { email: "", password: "" }; },
   methods: {
     async handleLogin() {
       try {
-        const res = await fetch("http://localhost:8087/notes/login", {
+        const res = await fetch(`${API_URL}/notes/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: this.email, password: this.password })
