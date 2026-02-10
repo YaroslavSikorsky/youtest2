@@ -1,21 +1,12 @@
 // src/api.js
 
-// Используем переменную окружения для URL API
-// В разработке: http://localhost:8087
-// В продакшене: значение из VITE_API_URL
-// export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8087";
-// export const API_URL = 'https://youtest2-production.up.railway.app';
+// Используем прямой URL бэкенда
+export const API_URL = "https://youtest2-production.up.railway.app";
 
-// src/api.js
-export const API_URL = '/api'; // теперь локальный путь на фронте
-
-console.log("API URL:", API_URL); // Для отладки и
+console.log("API URL:", API_URL);
 
 /**
  * Получение списка заметок.
- * @param {string} userId - ID пользователя
- * @param {string} type — фильтр по типу заметки (опционально)
- * @returns {Array} — массив заметок
  */
 export async function getNotes(userId, type = "") {
     const params = new URLSearchParams({ userId });
@@ -34,8 +25,6 @@ export async function getNotes(userId, type = "") {
 
 /**
  * Получение заметки по ID
- * @param {string} id - ID заметки
- * @returns {Object} — объект заметки
  */
 export async function getNoteById(id) {
     const res = await fetch(`${API_URL}/notes/${id}`);
@@ -50,8 +39,6 @@ export async function getNoteById(id) {
 
 /**
  * Добавление новой заметки
- * @param {Object} payload — данные заметки: {title, text, type, userId}
- * @returns {Object} — ответ сервера
  */
 export async function addNote(payload) {
     const res = await fetch(`${API_URL}/notes/add`, {
@@ -70,9 +57,6 @@ export async function addNote(payload) {
 
 /**
  * Обновление заметки
- * @param {string} id - ID заметки
- * @param {Object} payload — данные для обновления: {title, text, type, status, done, calendar, calendarDate}
- * @returns {Object} — ответ сервера
  */
 export async function updateNote(id, payload) {
     const res = await fetch(`${API_URL}/notes/${id}`, {
@@ -91,9 +75,6 @@ export async function updateNote(id, payload) {
 
 /**
  * Обновление статуса заметки (для drag & drop)
- * @param {string} id - ID заметки
- * @param {string} status - Новый статус (TODO, IN_PROGRESS, DONE)
- * @returns {Object} — ответ сервера
  */
 export async function updateNoteStatus(id, status) {
     const res = await fetch(`${API_URL}/notes/${id}/status`, {
@@ -112,8 +93,6 @@ export async function updateNoteStatus(id, status) {
 
 /**
  * Удаление заметки
- * @param {string} id - ID заметки
- * @returns {Object} — ответ сервера
  */
 export async function deleteNote(id) {
     const res = await fetch(`${API_URL}/notes/${id}`, {
@@ -130,7 +109,6 @@ export async function deleteNote(id) {
 
 /**
  * Получение списка типов заметок
- * @returns {Array} — массив типов
  */
 export async function getTypes() {
     const res = await fetch(`${API_URL}/notes/type`);
@@ -145,8 +123,6 @@ export async function getTypes() {
 
 /**
  * Получение заметок для календаря
- * @param {string} userId - ID пользователя
- * @returns {Array} — массив заметок с calendar = true
  */
 export async function getCalendarNotes(userId) {
     const res = await fetch(`${API_URL}/notes/calendar?userId=${userId}`);
@@ -161,9 +137,6 @@ export async function getCalendarNotes(userId) {
 
 /**
  * Получение заметок на конкретную дату
- * @param {string} userId - ID пользователя
- * @param {string} date - Дата в формате YYYY-MM-DD
- * @returns {Array} — массив заметок на указанную дату
  */
 export async function getNotesByDate(userId, date) {
     const res = await fetch(`${API_URL}/notes/calendar/date?userId=${userId}&date=${date}`);
@@ -174,4 +147,42 @@ export async function getNotesByDate(userId, date) {
 
     const text = await res.text();
     return text ? JSON.parse(text) : [];
+}
+
+// ========== ПОЛЬЗОВАТЕЛИ ==========
+
+/**
+ * Регистрация пользователя
+ */
+export async function registerUser(email, password) {
+    const res = await fetch(`${API_URL}/notes/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Ошибка регистрации");
+    }
+
+    return await res.text();
+}
+
+/**
+ * Логин пользователя
+ */
+export async function loginUser(email, password) {
+    const res = await fetch(`${API_URL}/notes/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Ошибка входа");
+    }
+
+    return await res.json();
 }
