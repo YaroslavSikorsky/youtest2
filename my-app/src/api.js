@@ -4,8 +4,10 @@
 // В разработке: http://localhost:8087
 // В продакшене: значение из VITE_API_URL
 // export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8087";
-export const API_URL = 'https://youtest2-production.up.railway.app';
+// export const API_URL = 'https://youtest2-production.up.railway.app';
 
+// src/api.js
+export const API_URL = '/api'; // теперь локальный путь на фронте
 
 console.log("API URL:", API_URL); // Для отладки и
 
