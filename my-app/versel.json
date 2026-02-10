@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/notes/:path*",
-      "destination": "https://youtest2-production.up.railway.app/notes/:path*"
+      "source": "/api/:path*",
+      "destination": "https://youtest2-production.up.railway.app/:path*"
     }
   ]
 }

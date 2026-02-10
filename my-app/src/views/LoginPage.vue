@@ -35,7 +35,7 @@ export default {
         const res = await fetch(`${API_URL}/notes/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          // credentials: "include",
           body: JSON.stringify({ email: this.email, password: this.password })
         });
         if (!res.ok) { alert(await res.text()); return; }
