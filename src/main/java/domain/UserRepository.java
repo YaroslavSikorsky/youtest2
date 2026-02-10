@@ -19,8 +19,8 @@ public interface UserRepository extends CrudRepository<User, UUID> {
 
 
     @Modifying
-    @Query("INSERT INTO public.users (email, password) VALUES (:email, :password)")
-    void saveUser(String email, String password);
+    @Query("INSERT INTO public.users (id, email, password) VALUES (:id, :email, :password)")
+    void saveUser(UUID id, String email, String password);
 
     @Query("SELECT * FROM public.users WHERE email = :email")
     User getUser(@Param("email") String email);

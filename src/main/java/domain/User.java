@@ -38,6 +38,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.subscription = true;
+        this.id = UUID.randomUUID();
     }
 
     @Override

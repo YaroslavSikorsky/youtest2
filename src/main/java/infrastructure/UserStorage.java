@@ -4,6 +4,8 @@ import domain.User;
 import domain.UserRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class UserStorage {
 
@@ -14,9 +16,9 @@ public class UserStorage {
     }
 
 
-    public void addUser(String email, String password) {
+    public void addUser(UUID id, String email, String password) {
        // User user = new User(email, password);
-        userRepository.saveUser(email, password);
+        userRepository.saveUser(id, email, password);
     }
 
     public User getUser(String email) {

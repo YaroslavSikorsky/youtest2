@@ -187,7 +187,7 @@ public class Controller {
     @PostMapping("/users")
     public ResponseEntity<?> addUser(@RequestBody User user) {
         try {
-            userStorage.addUser(user.getEmail(), user.getPassword());
+            userStorage.addUser(user. getId(), user.getEmail(), user.getPassword());
             return ResponseEntity.ok("Пользователь зарегистрирован");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
