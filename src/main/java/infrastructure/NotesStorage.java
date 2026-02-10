@@ -3,10 +3,11 @@ package infrastructure;
 import domain.Note;
 import domain.NoteType;
 import domain.NotesRepository;
-import domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,44 +28,85 @@ public class NotesStorage {
         listType.add(NoteType.WISHLIST);
         listType.add(NoteType.PARENT);
         listType.add(NoteType.APARTMENT);
-
+        listType.add(NoteType.TODO);
+        listType.add(NoteType.PROJECT);
+        listType.add(NoteType.PLACE);
     }
 
+    // Создание заметки
     public void addNotes(Note note) {
-
-        notesRepository.saveNotes(note.getText(), note.getType().toString(),note.getUserId());
-
+        notesRepository.saveNotes(
+                note.getTitle(),
+                note.getText(),
+                note.getType().toString(),
+                note.getUserId(),
+                note.getStatus(),
+                note.getDone(),
+                note.getCalendar(),
+                note.getCalendarDate(),
+                LocalDateTime.now()
+        );
     }
 
+    // Получение типов заметок
     public List<NoteType> getType() {
-
         return listType;
     }
-    public List<Note> showNotesByTypeAndUser(NoteType type, UUID userId) {
-        // Берём все заметки данного пользователя
-        List<Note> userNotes = notesRepository.show(userId);
 
-        // Фильтруем по типу
+    // Получение заметок по типу и пользователю
+    public List<Note> showNotesByTypeAndUser(NoteType type, UUID userId) {
+        List<Note> userNotes = notesRepository.show(userId);
         return userNotes.stream()
                 .filter(n -> n.getType() == type)
                 .collect(Collectors.toList());
     }
 
+    // Получение всех заметок пользователя
     public List<Note> showFullNotes(UUID userId) {
         return notesRepository.show(userId);
     }
 
+    // Получение заметок по типу
     public List<Note> showNotesByType(NoteType type) {
         return notesRepository.showByType(type);
     }
 
-//    public List<String> showNotes() {
-//
-//        return notesRepository.show()  // возвращает List<Note>
-//                .stream()
-//                .map(Note::getText)    // преобразуем Note → String
-//                .collect(Collectors.toList()); //
-//    }
+    // Получение заметки по ID
+    public Optional<Note> getNoteById(UUID id) {
+        return notesRepository.findById(id);
+    }
 
+    // Обновление заметки
+    public void updateNote(UUID id, Note note) {
+        notesRepository.updateNote(
+                id,
+                note.getTitle(),
+                note.getText(),
+                note.getType().toString(),
+                note.getStatus(),
+                note.getDone(),
+                note.getCalendar(),
+                note.getCalendarDate()
+        );
+    }
 
+    // Обновление только статуса (для drag & drop)
+    public void updateNoteStatus(UUID id, String status) {
+        notesRepository.updateStatus(id, status);
+    }
+
+    // Удаление заметки
+    public void deleteNote(UUID id) {
+        notesRepository.deleteNote(id);
+    }
+
+    // Получить заметки для календаря
+    public List<Note> getCalendarNotes(UUID userId) {
+        return notesRepository.getCalendarNotes(userId);
+    }
+
+    // Получить заметки на конкретную дату
+    public List<Note> getNotesByDate(UUID userId, LocalDate date) {
+        return notesRepository.getNotesByDate(userId, date);
+    }
 }
