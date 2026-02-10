@@ -1,14 +1,15 @@
 package infrastructure;
 
+import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class CorsConfig {
@@ -17,25 +18,22 @@ public class CorsConfig {
     private String allowedOrigins;
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public FilterRegistrationBean<Filter> corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-
-        // Разбиваем строку на массив (если несколько origins через запятую)
-        List<String> origins = Arrays.asList(allowedOrigins.split(","));
-
-        config.setAllowedOrigins(origins);
-        config.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
-        ));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
-        System.out.println("✅ CORS настроен для: " + allowedOrigins);
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(-1024); // важно: до других фильтров
 
-        return source;
+        System.out.println("✅ CORS фильтр зарегистрирован для: " + allowedOrigins);
+
+        return bean;
     }
 }

@@ -15,11 +15,6 @@ import java.util.Map;
 import java.util.UUID;
 
 //@CrossOrigin(origins = "http://localhost:5173")
-@CrossOrigin(
-        origins = "https://youtest2.vercel.app",
-        allowedHeaders = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS}
-)
 @RestController
 @RequestMapping("/notes")
 public class Controller {
