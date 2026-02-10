@@ -23,9 +23,10 @@ public interface NotesRepository extends CrudRepository<Note, UUID> {
 //                      @Param("userId") UUID userId);
 // Создание новой заметки
     @Modifying
-    @Query("INSERT INTO public.notes (title, data, type, user_id, status, done, calendar, calendar_date, created_at) " +
-            "VALUES (:title, :data, :type, :userId, :status, :done, :calendar, :calendarDate, :createdAt)")
-    Integer saveNotes(@Param("title") String title,
+    @Query("INSERT INTO public.notes (id, title, data, type, user_id, status, done, calendar, calendar_date, created_at) " +
+            "VALUES (:id, :title, :data, :type, :userId, :status, :done, :calendar, :calendarDate, :createdAt)")
+    Integer saveNotes(@Param("id") UUID id,
+                      @Param("title") String title,
                       @Param("data") String data,
                       @Param("type") String type,
                       @Param("userId") UUID userId,

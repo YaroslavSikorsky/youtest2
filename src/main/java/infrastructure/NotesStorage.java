@@ -36,6 +36,7 @@ public class NotesStorage {
     // Создание заметки
     public void addNotes(Note note) {
         notesRepository.saveNotes(
+                note.getId(),
                 note.getTitle(),
                 note.getText(),
                 note.getType().toString(),

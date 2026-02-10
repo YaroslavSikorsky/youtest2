@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Note {
 
     @Id
-    public String id; //uuid
+    public UUID id;
 
     @Column("title")
     public String title;
@@ -48,7 +48,7 @@ public class Note {
     public LocalDateTime createdAt;
 
     @PersistenceConstructor
-    public Note(String title, String text, NoteType type, UUID userId) {
+    public Note(UUID id, String title, String text, NoteType type, UUID userId) {
         this.title = title;
         this.text = text;
         this.type = type;
@@ -58,6 +58,7 @@ public class Note {
         this.calendar = false;
         this.calendarDate = null;
         this.createdAt = LocalDateTime.now();
+        this.id = id;
 
     }
 
