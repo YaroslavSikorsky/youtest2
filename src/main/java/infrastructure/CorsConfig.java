@@ -7,8 +7,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-//добавляем для спринга потому что опшен ломает корс
+import java.util.Arrays;
+
 @Configuration
 public class CorsConfig {
 
@@ -19,20 +19,27 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Для дебага можно временно:
-        System.out.println("CORS frontend: " + frontend);
+        // Для дебага
+        System.out.println("CORS frontend: [" + frontend + "]");
 
-        // Разрешаем фронт
-        config.setAllowedOrigins(List.of(frontend));
-        config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        // Разрешаем фронт (обязательно без лишних пробелов/кавычек)
+        config.setAllowedOrigins(Arrays.asList(frontend.trim()));
+
+        // Методы
+        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+
+        // Заголовки
+        config.setAllowedHeaders(Arrays.asList("*"));
+
+        // Если нужны куки/сессии
         config.setAllowCredentials(true);
 
-        // Обрабатываем preflight
-        config.addExposedHeader("Authorization"); // если используешь JWT
+        // Expose для JWT или других нужных заголовков
+        config.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 }
