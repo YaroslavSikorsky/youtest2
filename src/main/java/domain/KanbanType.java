@@ -1,6 +1,6 @@
 package domain;
 
-public enum CanbanType {
+public enum KanbanType {
 
     TODO, IN_PROGRESS, DONE
 }
