@@ -1,27 +1,12 @@
 <template>
-  <div style="min-height:100vh;background:var(--ui-bg)">
-    <AppHeader/>
+  <div class="auth-page">
+    <AppHeader />
 
-    <div class="container" style="max-width:480px;margin-top:140px">
-      <div
-          style="
-          background:var(--ui-surface);
-          border:1px solid var(--ui-border);
-          padding:28px;
-          border-radius:16px;
-          box-shadow:var(--shadow-sm);
-          width:100%;
-        "
-      >
-        <h2 style="text-align:center;margin-bottom:18px">
-          Регистрация
-        </h2>
+    <div class="auth-container">
+      <div class="auth-card">
+        <h2 class="auth-title">Регистрация</h2>
 
-        <form
-            @submit.prevent="handleRegister"
-            style="display:flex;flex-direction:column;gap:12px"
-        >
-          <!-- EMAIL -->
+        <form @submit.prevent="handleRegister" class="auth-form">
           <input
               v-model="email"
               type="email"
@@ -29,8 +14,6 @@
               placeholder="Почта"
               required
           />
-
-          <!-- PASSWORD -->
           <input
               v-model="password"
               type="password"
@@ -39,11 +22,7 @@
               required
           />
 
-          <!-- ERROR -->
-          <div
-              v-if="error"
-              style="color:#d33;font-size:14px;text-align:center"
-          >
+          <div v-if="error" class="auth-error">
             {{ error }}
           </div>
 
@@ -56,13 +35,9 @@
           </button>
         </form>
 
-        <p style="text-align:center;margin-top:12px;color:var(--ui-text-muted)">
+        <p class="auth-footer">
           Уже есть аккаунт?
-          <router-link
-              to="/login"
-              class="btn btn--ghost"
-              style="margin-left:8px;padding:6px 10px"
-          >
+          <router-link to="/login" class="btn btn--ghost">
             Войти
           </router-link>
         </p>
@@ -74,49 +49,109 @@
 <script>
 import AppHeader from "@/components/AppHeader.vue";
 import { API_URL } from "@/api";
-export default {
-  components: {AppHeader},
 
+export default {
+  components: { AppHeader },
   data() {
     return {
       email: "",
       password: "",
       loading: false,
-      error: null
+      error: null,
     };
   },
-
   methods: {
     async handleRegister() {
       this.error = null;
-
       this.loading = true;
 
       try {
         const res = await fetch(`${API_URL}/notes/users`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: this.email,
-            password: this.password
-          })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: this.email, password: this.password }),
         });
 
         if (!res.ok) {
-          // если email уже существует → будет 500 или 409
           throw new Error("Пользователь с таким email уже существует");
         }
 
-        // успех → на логин
         this.$router.push("/login");
       } catch (e) {
         this.error = e.message || "Ошибка регистрации";
       } finally {
         this.loading = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
+
+<style scoped>
+.auth-page {
+  min-height: 100vh;
+  background: var(--ui-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 140px;
+  width: 100%;
+}
+
+.auth-card {
+  background: var(--ui-surface);
+  padding: 32px 28px;
+  border-radius: var(--ui-radius-lg);
+  box-shadow: var(--shadow-md);
+  border: none;
+  width: 100%;
+  max-width: 520px; /* увеличенная ширина для гармоничного вида */
+}
+
+.auth-title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 24px; /* чуть больше заголовка */
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* увеличен отступ между полями */
+}
+
+.auth-error {
+  color: #d33;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 16px;
+  color: var(--ui-text-muted);
+}
+
+.auth-footer .btn {
+  margin-left: 8px;
+  padding: 8px 12px;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+  .auth-card {
+    max-width: 90%;
+    padding: 28px 20px;
+  }
+
+  .auth-title {
+    font-size: 22px;
+  }
+}
+</style>
