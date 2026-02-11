@@ -9,7 +9,7 @@
       />
       <textarea
           v-model="text"
-          class="note-textarea"
+          class="input note-textarea"
           placeholder="Введите заметку..."
       ></textarea>
       <button class="btn btn--primary" type="submit">Добавить</button>
@@ -68,22 +68,27 @@ export default {
 
 <style scoped>
 .note-create-card {}
+
 .note-title-input {
   width: 100%;
   margin-bottom: 8px;
 }
+
+/* textarea теперь использует стили UI-kit */
 .note-textarea {
   width: 100%;
   min-height: 90px;
-  padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--ui-radius-md); /* совпадает с input */
+  padding: 12px 14px;                 /* совпадает с input */
   border: 1px solid var(--ui-border);
-  color: var(--ui-primary);
-
+  font-family: var(--ui-font);
+  font-size: 15px;
+  color: var(--ui-text);              /* текст такой же, как в input */
+  resize: vertical;                   /* разрешаем вертикальное изменение */
 }
-
-
 </style>
+
+
 
 
 
