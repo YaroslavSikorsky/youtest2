@@ -1,7 +1,8 @@
 // src/api.js
-
+// чинил чтобы локально раболтало тоже, если сломается вернут хардкод ссылки
 // Используем прямой URL бэкенда
-export const API_URL = "https://youtest2-production.up.railway.app";
+// export const API_URL = "https://youtest2-production.up.railway.app";
+export const API_URL = process.env.VUE_APP_API_URL;
 
 console.log("API URL:", API_URL);
 
