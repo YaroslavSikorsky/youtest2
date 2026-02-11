@@ -35,8 +35,9 @@ public class NotesStorage {
 
     // Создание заметки
     public void addNotes(Note note) {
+        UUID id = UUID.randomUUID();
         notesRepository.saveNotes(
-                note.getId(),
+                id,
                 note.getTitle(),
                 note.getText(),
                 note.getType().toString(),
