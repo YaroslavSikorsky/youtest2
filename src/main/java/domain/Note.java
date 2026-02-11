@@ -45,7 +45,7 @@ public class Note {
     public LocalDate calendarDate;
 
     @Column("created_at")
-    public LocalDateTime createdAt;
+    public LocalDate createdAt;
 
     @PersistenceConstructor
     public Note(UUID id, String title, String text, NoteType type, UUID userId) {
@@ -57,7 +57,7 @@ public class Note {
         this.done = false;
         this.calendar = false;
         this.calendarDate = null;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
         this.id = id;
 
     }

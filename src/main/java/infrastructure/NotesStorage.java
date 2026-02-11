@@ -46,7 +46,7 @@ public class NotesStorage {
                 note.getDone(),
                 note.getCalendar(),
                 note.getCalendarDate(),
-                LocalDateTime.now()
+                LocalDate.now()
         );
     }
 

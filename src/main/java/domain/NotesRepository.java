@@ -34,7 +34,7 @@ public interface NotesRepository extends CrudRepository<Note, UUID> {
                       @Param("done") Boolean done,
                       @Param("calendar") Boolean calendar,
                       @Param("calendarDate") LocalDate calendarDate,
-                      @Param("createdAt") LocalDateTime createdAt);
+                      @Param("createdAt") LocalDate createdAt);
 
     @Query("SELECT * FROM public.notes WHERE user_id = :userId")
     List<Note> show(@Param("userId") UUID userId);
