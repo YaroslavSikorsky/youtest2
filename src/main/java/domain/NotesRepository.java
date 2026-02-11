@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,7 +29,7 @@ public interface NotesRepository extends CrudRepository<Note, UUID> {
                       @Param("data") String data,
                       @Param("type") String type,
                       @Param("userId") UUID userId,
-                      @Param("status") CanbanType status,
+                      @Param("status") KanbanType status,
                       @Param("done") Boolean done,
                       @Param("calendar") Boolean calendar,
                       @Param("calendarDate") LocalDate calendarDate,
@@ -61,7 +60,7 @@ public interface NotesRepository extends CrudRepository<Note, UUID> {
                        @Param("title") String title,
                        @Param("data") String data,
                        @Param("type") String type,
-                       @Param("status") CanbanType status,
+                       @Param("status") KanbanType status,
                        @Param("done") Boolean done,
                        @Param("calendar") Boolean calendar,
                        @Param("calendarDate") LocalDate calendarDate);

@@ -8,7 +8,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -33,7 +32,7 @@ public class Note {
 
     // для канбана
     @Column("status")
-    public CanbanType status;
+    public KanbanType status;
     // для галочки выполнено
     @Column("done")
     public Boolean done;
@@ -53,7 +52,7 @@ public class Note {
         this.text = text;
         this.type = type;
         this.userId = userId;
-        this.status = CanbanType.TODO;
+        this.status = KanbanType.TODO;
         this.done = false;
         this.calendar = false;
         this.calendarDate = null;
