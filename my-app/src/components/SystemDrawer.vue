@@ -51,26 +51,6 @@ export default {
 </script>
 
 <style scoped>
-/* КНОПКА */
-.system-handle {
-  position: fixed;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 14px;              /* 🔥 в 3 раза уже */
-  height: 80vh;             /* 🔥 80% экрана */
-  background: var(--ui-primary);
-  border-radius: 10px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2000;
-  font-size: 0;             /* скрываем ☰, оставляем «полоску» */
-}
-
-
 /* ПАНЕЛЬ */
 .system-drawer {
   position: fixed;
@@ -78,31 +58,64 @@ export default {
   left: 0;
   width: 220px;
   height: 80vh;
-  background: var(--ui-primary);
-  border-radius: 0 18px 18px 0;
+  background: var(--ui-surface);       /* фон как у карточек */
+  border-radius: 0 var(--ui-radius-lg) var(--ui-radius-lg) 0;
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   z-index: 2100;
+  box-shadow: var(--shadow-md);       /* мягкая тень */
+  font-family: var(--ui-font);        /* шрифт UI-kit */
 }
 
-/* ПУНКТЫ */
+/* ПУНКТЫ (заменяем на btn) */
 .system-item {
-  color: #fff;
+  color: var(--ui-text);
   text-decoration: none;
   padding: 10px 14px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.12);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-bg);           /* светлый фон */
+  border: 1px solid var(--ui-border);
+  font-weight: 500;
+  text-align: left;
+  transition: all 0.2s;
 }
 
 .system-item:hover {
-  background: rgba(255,255,255,0.25);
+  background: var(--ui-primary);
+  color: #fff;
+  border-color: var(--ui-primary);
 }
 
+/* Кнопка Выйти */
 .logout {
   margin-top: auto;
-  background: rgba(0,0,0,0.3);
+  background: var(--ui-primary-600);
+  color: #fff;
+  border: none;
+}
+
+.logout:hover {
+  background: var(--ui-primary);
+}
+
+/* КНОПКА-ХЕНДЛ */
+.system-handle {
+  position: fixed;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 80vh;
+  background: var(--ui-primary-600);
+  border-radius: var(--ui-radius-md);
+  cursor: pointer;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;
 }
 
 /* АНИМАЦИЯ */
@@ -110,7 +123,6 @@ export default {
 .system-slide-leave-active {
   transition: transform .25s ease;
 }
-
 .system-slide-enter-from,
 .system-slide-leave-to {
   transform: translateX(-100%);
@@ -120,7 +132,7 @@ export default {
 .system-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.2);
   z-index: 2050;
 }
 </style>
