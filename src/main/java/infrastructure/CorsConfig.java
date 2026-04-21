@@ -1,24 +1,42 @@
 package infrastructure;
 
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+//@Configuration //временно убираю чтобы протесстить. в рейл вей этот вариант работал!!!
+//public class CorsConfig implements WebMvcConfigurer {
+//
+//    @Value("${cors.allowed.origins}")
+//    private String frontend;
+//
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        System.out.println("CORS frontend: [" + frontend + "]");
+//
+//        registry.addMapping("/**")
+//                .allowedOrigins(frontend.trim())
+//                .allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS")
+//                .allowedHeaders("*")
+//                .allowCredentials(true);
+//    }
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Value("${cors.allowed.origins}")
-    private String frontend;
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        System.out.println("CORS frontend: [" + frontend + "]");
+        System.out.println("🔓 CORS: Registering for https://youtest2.vercel.app");
 
         registry.addMapping("/**")
-                .allowedOrigins(frontend.trim())
-                .allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS")
+                .allowedOriginPatterns("https://youtest2.vercel.app") // ⬅️ Используем patterns!
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }
