@@ -1,0 +1,17 @@
+meta:
+  environment: java
+  java:
+    version: "17"  # или "21", укажи версию из pom.xml
+
+build:
+  commands:
+    - mvn clean package -DskipTests
+
+run:
+  script: java -jar target/*.jar
+  port: 8080
+
+env:
+  JAVA_OPTS: "-Xmx256m -Xms128m"  # экономия памяти на стартовых тарифах
+  SPRING_PROFILES_ACTIVE: production
+  SERVER_PORT: "8080"              # Spring должен слушать тот же порт, что и в run.port
