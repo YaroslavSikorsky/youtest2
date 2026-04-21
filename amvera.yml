@@ -12,7 +12,7 @@
       target/*.jar: /
   run:
     image: null
-    jarName: main.jar
+    jarName: youtest2-1.0-SNAPSHOT.jar
     persistenceMount: /data
     containerPort: "80"
     servicePort: "80"
