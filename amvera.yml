@@ -4,7 +4,7 @@
     environment: jvm
     toolchain:
       name: maven
-      version: "17"
+      version: 17
   build:
     image: null
     args: null
@@ -14,5 +14,5 @@
     image: null
     jarName: youtest2-1.0-SNAPSHOT.jar
     persistenceMount: /data
-    containerPort: "8080"
-    servicePort: "8080"
+    containerPort: 8080
+    servicePort: 8080
