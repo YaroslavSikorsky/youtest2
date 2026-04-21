@@ -14,5 +14,5 @@
     image: null
     jarName: youtest2-1.0-SNAPSHOT.jar
     persistenceMount: /data
-    containerPort: "80"
-    servicePort: "80"
+    containerPort: "8080"
+    servicePort: "8080"
